@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="pri.weiqiang.tryit">
+    <!-- 使用静默安装时 必须添加android:sharedUserId="android.uid.system" 且必须使用系统签名 否则无法安装 -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.DELETE_PACKAGES" />
+    <uses-permission android:name="android.permission.CLEAR_APP_USER_DATA" />
+    <uses-permission android:name="android.permission.CLEAR_APP_CACHE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+
+    <application
+        android:name=".MyApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:screenOrientation="landscape"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".testnull.NullTestActivity">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+        <activity
+            android:name=".camerahub.TextureViewSysCameraActivity"
+            android:hardwareAccelerated="true" />
+        <activity android:name=".print.one.PrintImgInWebviewActivity" />
+        <activity android:name=".screensaver.AdActivity" />
+        <activity android:name=".screensaver.ScreenSaveActivity" />
+        <activity android:name=".clock.ClockActivity" />
+        <activity android:name=".countdown.CountDownActivity" />
+        <activity android:name=".camerax.CameraXActivity" />
+        <activity android:name=".aop.AopActivity" />
+        <activity android:name=".seekbar.SeekRecycleviewActivity" />
+        <activity android:name=".seekbar.SeekLogActivity" />
+        <activity android:name=".seekbar.SeekScrollActivity" />
+        <activity android:name=".webview.WebViewCorrectActivity" />
+        <activity android:name=".print.PrintActivity" />
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".bigtext.BigTxtReaderActivity" />
+        <activity android:name=".adb.AdbActivity" />
+        <activity android:name=".broadcast.BroadcastActivity" />
+        <activity android:name=".component.ComponentActivity" />
+        <activity android:name=".aop.hujiang.PerformanceActivity" />
+        <activity android:name=".thread.KillThreadActivity" />
+        <activity android:name=".lifecycle.BActivity" />
+        <activity android:name=".lifecycle.AActivity" />
+        <activity android:name=".handler.TwoActivity" />
+        <activity android:name=".handler.OneActivity" />
+        <activity android:name=".handler.HandlerDemoActivity" />
+        <activity android:name=".handler.HandlerActivity" />
+        <activity android:name=".handler.WeakReferenceHandlerActivity" />
+        <activity android:name=".eventbus.EventSecondActivity" />
+        <activity android:name=".eventbus.EventFirstActivity" />
+        <activity android:name=".scrollview.NestedScrollViewActivity" />
+        <activity android:name=".scrollview.SimpleListViewActivity" />
+        <activity android:name=".glide.GlideActivity" />
+        <activity android:name=".longclick.LongClickActivity" />
+        <activity android:name=".looper.WorkThreadActivity" />
+        <activity android:name=".looper.LooperActivity" />
+        <activity android:name=".scrollview.ScrollViewActivity2" />
+        <activity android:name=".scrollview.SimpleRecycleViewActivity" />
+        <activity android:name=".scrollview.ScrollMainActivity" />
+        <activity android:name=".jni.JNIActivity" />
+        <activity android:name=".sidebar.SideBarActivity" />
+        <activity android:name=".instance.SaveInstanceActivity" />
+        <activity android:name=".progressbar.ProgressBarActivity" />
+        <activity android:name=".customview.CustomViewActivity" />
+        <activity android:name=".customview.VolumneViewActivity" />
+        <activity android:name=".customview.CircleViewActivity" />
+        <activity android:name=".dagger2.example1.DaggerE1Activity" />
+        <activity android:name=".dagger2.Dagger2Activity" />
+        <activity android:name=".dagger2.example2.DaggerE2Activity" />
+        <activity android:name=".dagger2.example3.DaggerE3Activity" />
+        <activity android:name=".dagger2.example4.DaggerE4Activity" />
+        <activity android:name=".dagger2.example5.DaggerE5Activity" />
+        <activity android:name=".dagger2.example6.DaggerE6Activity" />
+        <activity android:name=".service.ServiceActivity1" />
+        <activity android:name=".service.ServiceActivity2" />
+        <activity android:name=".scrollview.RecyclerActivity" />
+        <activity android:name=".scrollview.ListActivity" />
+        <activity android:name=".handler.WeakReferenceActivity" />
+        <activity android:name=".shell.ShellActivity" />
+        <activity android:name=".install.InstallActivity" />
+        <activity android:name=".webview.WebviewActivity" />
+        <activity android:name=".print.two.PrintTwoActivity" />
+        <activity android:name=".print.one.PrintOneActivity" />
+        <activity android:name=".print.one.PrintPdfOneActivity" />
+        <activity android:name=".print.one.PrintLyaoutActivity" />
+        <activity android:name=".print.one.PrintHtmlOffScreenActivity" />
+        <activity android:name=".print.one.PrintHtmlActivity" />
+        <activity android:name=".print.one.PrintBitmapActivity" />
+        <activity android:name=".reader.ui.ReadActivity" />
+        <activity
+            android:name=".fronts.FrontActivity"
+            android:theme="@style/FrontActivityTheme" />
+        <activity android:name=".scoket.chat.ui.ScoketChatActivity" />
+        <activity android:name=".shutdown.ShutDownActivity" />
+        <activity android:name=".permission.PermissionActivity" />
+        <activity android:name=".aop.aspectj.AspectjActivity" />
+        <activity android:name=".camera.Camera1Activity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".service.MyService1" />
+        <service android:name=".service.MyService2" />
+        <!--
+            没有action 报错如下 Calling a method in the system process without a qualified user:
+            android.app.ContextImpl.sendBroadcast:877 android.content.ContextWrapper.sendBroadcast:421
+            pri.weiqiang.home.ui.MainActivity.sendInstallUninstallSilentBroadcast:142
+            pri.weiqiang.home.ui.MainActivity.unintallInstallSlient:128 java.lang.reflect.Method.invoke:-2
+        -->
+        <receiver
+            android:name=".install.core.ApkManageReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="pri.weiqiang.home.MANAGE_INSTALL_SILENT" />
+                <action android:name="pri.weiqiang.home.MANAGE_UNINSTALL_SILENT" />
+                <action android:name="pri.weiqiang.home.MANAGE_UNINSTALL_INSTALL_SILENT" />
+            </intent-filter>
+        </receiver>
+        <!--
+                不能添加，系统广播和自定义广播不能组合
+                Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:877 android.content.ContextWrapper.sendBroadcast:421 pri.weiqiang.home.ui.MainActivity.sendInstallSilentBroadcast:136
+                pri.weiqiang.home.ui.MainActivity.installSilent:101 java.lang.reflect.Method.invoke:-2
+        -->
+        <receiver
+            android:name=".install.core.SdkInstallReceiver"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".install.core.ApkManageService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="pri.weiqiang.home.RUN" />
+                <action android:name="pri.weiqiang.home.service.INSTALL_SILENCE" />
+                <action android:name="pri.weiqiang.home.service.UN_INSTALL_SILENCE" />
+            </intent-filter>
+        </service>
+        <service android:name=".print.two.MyPrintService" />
+        <!--
+        android:authorities="${applicationId}.provider"
+        可以随便取，只要和FileProvider.getUriForFile一致即可也可以
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="pri.weiqiang.home.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+
+</manifest>

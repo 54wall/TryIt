@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".customview.CircleView">
+
+    <pri.weiqiang.tryit.customview.CircleView
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        custom:arcColor="@android:color/holo_blue_light"
+        custom:circleColor="@android:color/holo_blue_dark"
+        custom:startAngle="0"
+        custom:sweepAngle="260"
+        custom:text="90%"
+        custom:textColor="@android:color/holo_blue_light"
+        custom:textSize="30sp" />
+</RelativeLayout>

@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f0f0f0"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <Button
+        android:id="@+id/bitmap_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="打印图片"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/layout_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="打印布局界面" />
+
+
+    <Button
+        android:id="@+id/html_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="打印网页" />
+
+    <Button
+        android:id="@+id/btn_html_img"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="设置网页图片并打印" />
+
+    <Button
+        android:id="@+id/off_screen_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="分布打印网页" />
+
+    <Button
+        android:id="@+id/btn_pdf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PDF" />
+
+</LinearLayout>

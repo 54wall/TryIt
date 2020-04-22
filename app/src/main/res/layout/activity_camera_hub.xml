@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--HDMI屏-->
+    <TextureView
+        android:id="@+id/camera_surfaceview_L_resident"
+        android:layout_width="280dp"
+        android:layout_height="380dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="200dp"
+        android:visibility="visible" />
+    <!--HDMI屏-->
+    <SurfaceView
+        android:id="@+id/face_frame_surfaceview"
+        android:layout_width="480dp"
+        android:layout_height="640dp"
+        android:layout_marginStart="55dp"
+        android:layout_marginTop="160dp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/resident_readface_bgview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="0dp"
+        android:fitsSystemWindows="true"
+        android:gravity="top|center"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+    </LinearLayout>
+
+
+</FrameLayout>

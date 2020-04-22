@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="visible">
+
+    <!-- 不要添加android:transcriptMode="normal"，会导致自动更新到底部，P2P下不会，有时不会更新到底部 -->
+    <ListView
+        android:id="@+id/lv_city"
+        style="@style/ListStyleMain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white" />
+
+    <TextView
+        android:id="@+id/tv_center_hint"
+        style="@style/CenterHintText" />
+
+    <pri.weiqiang.sidebarlib.SideBar
+        android:id="@+id/sidebar"
+        style="@style/MySiderBar"
+        android:layout_alignTop="@+id/lv_city"
+        android:visibility="visible" />
+
+</RelativeLayout>

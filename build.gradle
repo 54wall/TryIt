@@ -1,0 +1,31 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+
+    repositories {
+//        mavenCentral() //原生aspectjx需要，可以屏蔽 估计jcenter() 库也有
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.4.2'
+        //发布到JitPack需要的依赖
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+        //引入沪江 AOP AspectJ 与原生可以共存 这里屏蔽
+//        classpath 'com.hujiang.aspectjx:gradle-android-plugin-aspectjx:2.0.4'
+        //引入原生AspectJ
+        classpath 'org.aspectj:aspectjtools:1.8.13'
+        classpath 'org.aspectj:aspectjweaver:1.8.13'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url "https://jitpack.io" }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

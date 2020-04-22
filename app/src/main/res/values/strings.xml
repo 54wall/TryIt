@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">TryIt</string>
+    <string name="title_activity_progress_bar">ProgressBarActivity</string>
+    <string name="title_activity_custom_view">CustomViewActivity</string>
+    <string name="title_activity_volumne_view">VolumneViewActivity</string>
+    <string name="title_activity_circle_view">CircleViewActivity</string>
+    <string name="title_activity_jni">JNIActivity</string>
+</resources>

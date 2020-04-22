@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!--如果Activity使用的最原始的android主题，需要为子视图添加AppCompat主题，否则SeekBar将无法显示-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+        android:id="@+id/wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="2000dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="@+id/rv"
+        android:layout_gravity="end"
+        android:visibility="visible">
+        <!--SeekBar自定义图标android:thumb="@drawable/seekbar"-->
+        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+            android:id="@+id/seekBar_main_scrollThumb"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:layout_alignStart="@+id/wrapper"
+            android:layout_alignTop="@+id/wrapper"
+            android:visibility="gone"
+            app:seekBarRotation="CW90" />
+
+    </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/wrapper"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="327dp"
+        android:layout_marginBottom="58dp"
+        android:text="Button" />
+
+</RelativeLayout>

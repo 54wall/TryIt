@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tv_section"
+        style="@style/SectionText"
+        android:paddingLeft="8dip"
+        android:text="A"
+        android:visibility="visible" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="52dp"
+        android:layout_below="@+id/tv_section">
+
+        <TextView
+            android:id="@+id/tv_city"
+            style="@style/NameText"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="15dp"
+            android:layout_toRightOf="@+id/iv_avatar"
+            android:textSize="16sp" />
+
+        <pri.weiqiang.charavatarlib.CharAvatarView
+            android:id="@+id/iv_avatar"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="14dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

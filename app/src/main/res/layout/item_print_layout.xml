@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="64dip"
+    android:orientation="horizontal"
+    android:paddingStart="16dip"
+    android:paddingEnd="16dip">
+
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:src="@drawable/ic_launcher_foreground" />
+
+    <TextView
+        android:id="@+id/year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="start"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textIsSelectable="false"></TextView>
+
+    <TextView
+        android:id="@+id/champion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:duplicateParentState="true"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textIsSelectable="false"></TextView>
+
+    <TextView
+        android:id="@+id/constructor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="end"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textIsSelectable="false"></TextView>
+
+</LinearLayout>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <pri.weiqiang.tryit.countdown.TimerTextView
+        android:id="@+id/timerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:textSize="22sp" />
+
+    <pri.weiqiang.tryit.countdown.TimerTextView
+        android:id="@+id/timerTextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Hello World!"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="22sp" />
+
+</LinearLayout>

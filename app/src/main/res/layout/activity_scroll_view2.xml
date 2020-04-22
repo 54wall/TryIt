@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".scrollview.ScrollViewActivity2"
+    tools:layout_editor_absoluteX="8dp"
+    tools:layout_editor_absoluteY="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!--        <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />-->
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="AAAAAAAAAA\nAAAAAAAAAA\nAAAAAAAAAA\nAAAAAAAAAA\nAAAAAAAAAA\nAAAAAAAAAA\nAAAAAAAAAA\nAAAAAAAAAA\nAAAAAAAAAA\nAAAAAAAAAA" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_1"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:background="#888888">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="BBBBBBBBBB\nBBBBBBBBBB\nBBBBBBBBBB\nBBBBBBBBBB\nBBBBBBBBBB\nBBBBBBBBBB\nBBBBBBBBBB\nBBBBBBBBBB\nBBBBBBBBBB\nBBBBBBBBBB" />
+    </LinearLayout>
+
+</ScrollView>

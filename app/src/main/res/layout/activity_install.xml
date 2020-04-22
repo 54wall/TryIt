@@ -1,0 +1,72 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp">
+
+        <Button
+            android:id="@+id/btn_install"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="installSilent"
+            android:text="静默安装" />
+
+
+        <Button
+            android:id="@+id/btn_unintall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="unInstallSilent"
+            android:text="静默卸载" />
+
+        <Button
+            android:id="@+id/btn_install_common_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="installOne"
+            android:text="正常安装方法一" />
+
+        <Button
+            android:id="@+id/btn_install_common_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="installTwo"
+            android:text="正常安装方法二" />
+
+        <Button
+            android:id="@+id/btn_unintall_common"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="unintall"
+            android:text="普通卸载" />
+
+        <Button
+            android:id="@+id/btn_unintall_install"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="unintallInstall"
+            android:text="先普通卸载再安装" />
+
+        <Button
+            android:id="@+id/btn_unintall_install_slient"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="unintallInstallSlient"
+            android:text="静默卸载再安装" />
+
+        <Button
+            android:id="@+id/btn_kill_process"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="结束当前进程" />
+
+
+    </LinearLayout>
+</ScrollView>
