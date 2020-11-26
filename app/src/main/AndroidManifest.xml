@@ -125,6 +125,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".handler.HandlerInLooperActivity" />
 
         <service android:name=".service.MyService1" />
         <service android:name=".service.MyService2" />
