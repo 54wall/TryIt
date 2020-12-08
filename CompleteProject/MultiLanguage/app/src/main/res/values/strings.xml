@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MultiLanguage</string>
+    <string name="message">Traditional Chinese multilingual</string>
+    <string name="zh_cn">中文简体</string>
+    <string name="zh_tw">中文繁体</string>
+    <string name="en">英文</string>
+    <string name="ja">日文</string>
+    <string name="sys">跟随系统</string>
+
+</resources>
