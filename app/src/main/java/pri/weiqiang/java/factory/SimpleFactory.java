@@ -3,6 +3,7 @@ package pri.weiqiang.java.factory;
 import pri.weiqiang.java.factory.drink.Americano;
 import pri.weiqiang.java.factory.drink.Cappuccino;
 import pri.weiqiang.java.factory.drink.Coffee;
+import pri.weiqiang.java.factory.drink.Drink;
 import pri.weiqiang.java.factory.drink.Latte;
 
 /**
@@ -35,6 +36,14 @@ public class SimpleFactory {
         System.out.println("创建的咖啡实例为:" + latte.getName());
         Coffee cappuccino = SimpleFactory.createInstance("cappuccino");
         System.out.println("创建的咖啡实例为:" + cappuccino.getName());
+        Drink drink = new Drink() {
+            @Override
+            public String getName() {
+                return null;
+            }
+        };
+        drink = latte;
+        System.out.println("drink:"+drink.getName());
     }
 
 }

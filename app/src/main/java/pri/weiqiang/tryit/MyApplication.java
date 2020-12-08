@@ -1,18 +1,26 @@
 package pri.weiqiang.tryit;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.squareup.leakcanary.LeakCanary;
 
 import java.lang.reflect.Field;
+import java.util.Locale;
+
+import pri.weiqiang.tryit.util.MultiLanguageUtils;
+import pri.weiqiang.tryit.util.SPUtils;
 
 public class MyApplication extends Application {
 
     public static Typeface typeFace;
     private static Context sInstance;
-    private String TAG = MyApplication.class.getSimpleName();
+    private static String TAG = MyApplication.class.getSimpleName();
 
     public static Context getContext() {
         return sInstance;
@@ -30,7 +38,7 @@ public class MyApplication extends Application {
         // Normal app init code...
         setTypeface();
         sInstance = this;
-
+        registerActivityLifecycleCallbacks(/*MultiLanguageUtils.*/callbacks);
 
     }
 
@@ -62,5 +70,53 @@ public class MyApplication extends Application {
             e.printStackTrace();
         }
     }
+
+    //注册Activity生命周期监听回调，此部分一定加上，因为有些版本不加的话多语言切换不回来
+    //registerActivityLifecycleCallbacks(callbacks);
+    public Application.ActivityLifecycleCallbacks callbacks = new Application.ActivityLifecycleCallbacks() {
+        @Override
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+            String language = (String) SPUtils.get(activity, MultiLanguageUtils.SP_LANGUAGE, "");
+            String country = (String) SPUtils.get(activity, MultiLanguageUtils.SP_COUNTRY, "");
+            Log.e(TAG, language);
+            if (!TextUtils.isEmpty(language) && !TextUtils.isEmpty(country)) {
+                //强制修改应用语言
+                if (!MultiLanguageUtils.isSameWithSetting(activity)) {
+                    Locale locale = new Locale(language, country);
+                    MultiLanguageUtils.setAppLanguage(activity, locale);
+                }
+            }
+        }
+
+        @Override
+        public void onActivityStarted(Activity activity) {
+
+        }
+
+        @Override
+        public void onActivityResumed(Activity activity) {
+
+        }
+
+        @Override
+        public void onActivityPaused(Activity activity) {
+
+        }
+
+        @Override
+        public void onActivityStopped(Activity activity) {
+
+        }
+
+        @Override
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+        }
+
+        @Override
+        public void onActivityDestroyed(Activity activity) {
+
+        }
+    };
 
 }

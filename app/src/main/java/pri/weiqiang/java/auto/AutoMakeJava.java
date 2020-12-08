@@ -7,6 +7,6 @@ public class AutoMakeJava {
         System.out.println(TAG+"");
         Traveller dist = new Traveller();
         Traveller orig = new Traveller();
-        BeanUtils.copyProperties(dist,orig);
+//        BeanUtils.copyProperties(dist,orig);
     }
 }
