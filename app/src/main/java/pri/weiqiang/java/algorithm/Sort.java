@@ -223,7 +223,7 @@ public class Sort {
         System.out.println();
     }
 
-    // 快速排序
+    // 快速排序 quickSort(a6, 0, a6.length - 1);
     private static void quickSort(int[] a, int low, int high) {
         int start = low;
         int end = high;
