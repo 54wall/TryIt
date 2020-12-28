@@ -83,6 +83,7 @@ public class Sort {
     }
 
     // 插入排序 https://blog.csdn.net/csdn_aiyang/article/details/73108606
+    //总结，每进行一趟排序，保证已经排序的序列由小变大，找到合适的位置，第二层循环（子序列）从后向前
     private static void insertSort(int[] a) {
         System.out.println("插入排序");
         // 直接插入排序
@@ -126,15 +127,16 @@ public class Sort {
 
 
     // 选择排序 https://blog.csdn.net/csdn_aiyang/article/details/73108606
+    //总结，每一次排序找到最小值（或最大值），并将最小值和新最小值交换位置，第二个循环从也是从前向后
     public static void selectSort(int[] a) {
         System.out.println("选择排序");
         int min;
         int tmp;
         for (int i = 0; i < a.length; i++) {
             min = a[i];
-            for (int j = i; j < a.length; j++) {
+            for (int j = i; j < a.length; j++) {//两个循环都是从前先后
                 if (a[j] < min) {
-                    min = a[j];// 最小值
+                    min = a[j];//最小值
                     tmp = a[i];
                     a[i] = a[j];//这么写，更好理解 a[i] = min;//没有前者好理解
                     a[j] = tmp;
