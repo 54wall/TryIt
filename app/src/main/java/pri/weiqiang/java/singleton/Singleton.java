@@ -6,4 +6,5 @@ public enum Singleton {
     public void sayHello() {
         System.out.println("Hello World.");
     }
+
 }
