@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * https://www.cnblogs.com/loong-hon/p/10256686.html
+ * java.util.ConcurrentModificationException异常原因及解决方法
+ */
 public class IteratorDemo01 {
 
     public static void main(String[] args) {
