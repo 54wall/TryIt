@@ -1,0 +1,91 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "pri.weiqiang.study.productflavors"
+        minSdkVersion 16
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+        flavorDimensions "demo"
+    }
+
+    signingConfigs {
+
+        demo001 {
+            storeFile file('../demo001.jks')
+            storePassword '123456'
+            keyPassword '123456'
+            keyAlias 'demo001'
+        }
+        demo002 {
+            storeFile file('../demo002.jks')
+            storePassword '123456'
+            keyPassword '123456'
+            keyAlias 'demo002'
+        }
+
+    }
+
+    productFlavors {
+        demo001 {
+            dimension "demo"
+        }
+        demo002 {
+            dimension "demo"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+                    applicationVariants.all { variant ->
+                        variant.outputs.all { output ->
+                            if (variant.flavorName == "demo001") {
+                            signingConfig signingConfigs.demo001
+                                outputFileName = "demo001_" + buildTypeName + "_" + defaultConfig.versionName + ".apk"
+                            } else if (variant.flavorName == "demo002") {
+                            signingConfig signingConfigs.demo002
+                                outputFileName = "demo002_" + buildTypeName + "_" + defaultConfig.versionName + ".apk"
+                            }
+                        }
+                    }
+        }
+
+                debug {
+                    minifyEnabled false
+                    proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+                            applicationVariants.all { variant ->
+                                variant.outputs.all { output ->
+                                    if (variant.flavorName == "demo001") {
+                                    signingConfig signingConfigs.demo001
+                                        outputFileName = "demo001_" + buildTypeName + "_" + defaultConfig.versionName + ".apk"
+                                    } else if (variant.flavorName == "demo002") {
+                                    signingConfig signingConfigs.demo002
+                                        outputFileName = "demo002_" + buildTypeName + "_" + defaultConfig.versionName + ".apk"
+                                    }
+                                }
+                            }
+                }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
+    implementation project(path: ':common')
+}
