@@ -16,13 +16,7 @@ android {
     }
 
     signingConfigs {
-
-        demo001 {
-            storeFile file('../demo001.jks')
-            storePassword '123456'
-            keyPassword '123456'
-            keyAlias 'demo001'
-        }
+        //前后顺序决定使用哪个签名
         demo002 {
             storeFile file('../demo002.jks')
             storePassword '123456'
@@ -30,9 +24,18 @@ android {
             keyAlias 'demo002'
         }
 
+        demo001 {
+            storeFile file('../demo001.jks')
+            storePassword '123456'
+            keyPassword '123456'
+            keyAlias 'demo001'
+        }
+
+
     }
 
     productFlavors {
+        //这里的顺序决定了最后使用哪个签名，谁在后边就用哪个签名
         demo001 {
             dimension "demo"
         }
@@ -46,35 +49,35 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-                    applicationVariants.all { variant ->
-                        variant.outputs.all { output ->
-                            if (variant.flavorName == "demo001") {
-                            signingConfig signingConfigs.demo001
-                                outputFileName = "demo001_" + buildTypeName + "_" + defaultConfig.versionName + ".apk"
-                            } else if (variant.flavorName == "demo002") {
-                            signingConfig signingConfigs.demo002
-                                outputFileName = "demo002_" + buildTypeName + "_" + defaultConfig.versionName + ".apk"
-                            }
-                        }
+            applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+                    if (variant.flavorName == "demo001") {
+                        signingConfig signingConfigs.demo001
+                        outputFileName = "demo001_" + defaultConfig.versionCode + "_" + defaultConfig.versionName + ".apk"
+                    } else if (variant.flavorName == "demo002") {
+                        signingConfig signingConfigs.demo002
+                        outputFileName = "demo002_" + defaultConfig.versionCode + "_" + defaultConfig.versionName + ".apk"
                     }
+                }
+            }
         }
 
-                debug {
-                    minifyEnabled false
-                    proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-                            applicationVariants.all { variant ->
-                                variant.outputs.all { output ->
-                                    if (variant.flavorName == "demo001") {
-                                    signingConfig signingConfigs.demo001
-                                        outputFileName = "demo001_" + buildTypeName + "_" + defaultConfig.versionName + ".apk"
-                                    } else if (variant.flavorName == "demo002") {
-                                    signingConfig signingConfigs.demo002
-                                        outputFileName = "demo002_" + buildTypeName + "_" + defaultConfig.versionName + ".apk"
-                                    }
-                                }
-                            }
+            applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+                    if (variant.flavorName == "demo001") {
+                        signingConfig signingConfigs.demo001
+                        outputFileName = "demo001_" + defaultConfig.versionCode + "_" + defaultConfig.versionName + ".apk"
+                    } else if (variant.flavorName == "demo002") {
+                        signingConfig signingConfigs.demo002
+                        outputFileName = "demo002_" + defaultConfig.versionCode + "_" + defaultConfig.versionName + ".apk"
+                    }
                 }
+            }
+        }
     }
 
     compileOptions {
