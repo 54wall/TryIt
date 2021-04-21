@@ -1,0 +1,18 @@
+{
+
+  "interval": 4,
+  "version": "0.1",
+  "adsBannerList": [
+  ],
+    "adsFullList": [
+    {
+      "name": "full_0.jpg"
+    },
+	      {
+      "name": "full_1.jpg"
+    },
+	      {
+      "name": "full_2.jpg"
+    }
+  ]
+}
