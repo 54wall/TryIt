@@ -9,6 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ProductFlavors">
+        <meta-data
+            android:name="APK_CHANNEL"
+            android:value="${APK_CHANNEL_VALUE}" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -56,9 +56,11 @@ android {
     productFlavors {
         demo001 {
             dimension "demo"
+            manifestPlaceholders = [APK_CHANNEL_VALUE: "demo001"]
         }
         demo002 {
             dimension "demo"
+            manifestPlaceholders = [APK_CHANNEL_VALUE: "demo002"]
         }
     }
 
@@ -111,7 +113,14 @@ dependencies {
 
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
-    implementation project(path: ':common')
+/**
+ * 	  会报类被重复定义的问题
+ * 	  Type pri.weiqiang.study.common.BuildConfig is defined multiple times:
+ *       D:\Develop\Demo\Android\Mine\TryIt\CompleteProject\ProductFlavors\common\build\.transforms\
+ *       326e915c3a6056e298637dbabb3844db\classes\classes.dex, D:\Develop\Demo\Android\Mine\TryIt\
+ *       CompleteProject\ProductFlavors\app\build\intermediates\external_libs_dex\demo002Release\mergeExtDexDemo002Release\classes.dex
+ */
+//    implementation project(path: ':common')
     demo001Api files('libs/demo001/demo001.jar')
     demo002Api files('libs/demo002/demo002.jar')
 }
