@@ -10,6 +10,7 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import advert.sdk.com.advertlibrary.R;
@@ -104,6 +106,7 @@ public class AdPresentation extends Presentation {
     private void initView() {
         mLlAd = (LinearLayout) findViewById(R.id.ll_ad);
         mVpAdFull = (ViewPager) findViewById(R.id.vp_ad_full);
+        changeViewPagerSpeed(mVpAdFull);
         mLlDotsFull = (LinearLayout) findViewById(R.id.ll_dots_full);
         mFlAdFull = (FrameLayout) findViewById(R.id.fl_ad_full);
         mTvVpFull = (TextView) findViewById(R.id.tv_vp_full);
@@ -113,6 +116,18 @@ public class AdPresentation extends Presentation {
         mTvVpBanner = (TextView) findViewById(R.id.tv_vp_banner);
     }
 
+    private void changeViewPagerSpeed(ViewPager mViewPager){
+        try {
+            Field field = ViewPager.class.getDeclaredField("mScroller");
+            field.setAccessible(true);
+            FixedSpeedScroller scroller = new FixedSpeedScroller(mViewPager.getContext(),
+                    new AccelerateInterpolator());
+            field.set(mViewPager, scroller);
+            scroller.setmDuration(1000);
+        } catch (Exception e) {
+
+        }
+    }
     public void setAdType(int adType) {
         switch (adType) {
             case AdvertConstant.AD_SEC_FULL:
@@ -156,7 +171,7 @@ public class AdPresentation extends Presentation {
                     adsFullList.add(AdvertConstant.PATH_ADS_ROOT + adBean.getAdsFullList().get(i).getName());
                 }
 
-                fullAdapter = new FullAdapter(context, adsFullList);
+                fullAdapter = new FullAdapter(context, mVpAdFull,adsFullList);
 
                 mVpAdFull.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                     @Override
@@ -166,10 +181,13 @@ public class AdPresentation extends Presentation {
 
                     @Override
                     public void onPageSelected(int i) {
-                        currentPositionFull = i;
+                        //伪无限循环，滑到最后一张图片又从新进入第一张图片
+                        int newPosition = i % adsFullList.size();
+                        //设置轮播点 可设置成传入的图
                         mLlDotsFull.getChildAt(previousSelectedPositionFull).setEnabled(false);
-                        mLlDotsFull.getChildAt(currentPositionFull).setEnabled(true);
-                        previousSelectedPositionFull = currentPositionFull;
+                        mLlDotsFull.getChildAt(newPosition).setEnabled(true);
+                        // 把当前的索引赋值给前一个索引变量, 方便下一次再切换.
+                        previousSelectedPositionFull = newPosition;
                     }
 
                     @Override
@@ -288,8 +306,7 @@ public class AdPresentation extends Presentation {
                                             mVpAdBanner.setCurrentItem(currentPositionBanner);
                                         }
                                         if (maxFull != 0) {
-                                            currentPositionFull = (currentPositionFull + 1) % maxFull;
-                                            mVpAdFull.setCurrentItem(currentPositionFull);
+                                            mVpAdFull.setCurrentItem(mVpAdFull.getCurrentItem()+1);
                                         }
                                     }
                                 });
