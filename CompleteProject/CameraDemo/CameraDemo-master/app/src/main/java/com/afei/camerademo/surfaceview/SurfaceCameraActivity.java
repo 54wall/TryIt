@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.afei.camerademo.ImageUtils;
@@ -27,7 +28,8 @@ public class SurfaceCameraActivity extends AppCompatActivity implements View.OnC
     private CameraSurfaceView mCameraView;
 
     private CameraProxy mCameraProxy;
-
+    private Button mBtnClose;
+    private Button mBtnOpen;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +49,25 @@ public class SurfaceCameraActivity extends AppCompatActivity implements View.OnC
         mPictureIv.setImageBitmap(ImageUtils.getLatestThumbBitmap());
         mCameraView = findViewById(R.id.camera_view);
         mCameraProxy = mCameraView.getCameraProxy();
+        mBtnClose = findViewById(R.id.btn_close);
+        mBtnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCameraView.setVisibility(View.INVISIBLE);
+                mCameraProxy.releaseCamera();
+
+            }
+        });
+        mBtnOpen =findViewById(R.id.btn_open);
+        mBtnOpen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mCameraProxy.openCamera();
+                mCameraProxy.startPreview(mCameraView.getHolder());
+                mCameraView.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override

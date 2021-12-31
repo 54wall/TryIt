@@ -43,10 +43,28 @@
 
     <com.afei.camerademo.surfaceview.CameraSurfaceView
         android:id="@+id/camera_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
         android:layout_below="@+id/toolbar">
     </com.afei.camerademo.surfaceview.CameraSurfaceView>
+
+    <Button
+        android:id="@+id/btn_open"
+        android:text="open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="58dp"/>
+
+
+    <Button
+        android:id="@+id/btn_close"
+        android:text="close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="119dp"/>
+
 
     <ImageView
         android:id="@+id/take_picture_iv"
