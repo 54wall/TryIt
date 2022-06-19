@@ -109,6 +109,7 @@ variants.all { variant ->
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
     implementation 'androidx.annotation:annotation:1.1.0'
     //camerax必须使用某一版本之上的库才可以，rc01 alpha05 不会报错
     implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
@@ -121,10 +122,7 @@ dependencies {
     annotationProcessor 'com.google.dagger:dagger-compiler:2.16'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     implementation 'org.greenrobot:eventbus:3.1.1'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
-    // Optional, if you use support library fragments:
-    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.3'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
     //引入沪江AOP aspectjrt
     implementation 'org.aspectj:aspectjrt:1.8.13'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'

@@ -58,11 +58,11 @@
 <!--            </intent-filter>-->
         </activity>
         <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
         <activity android:name=".bigtext.BigTxtReaderActivity" />
         <activity android:name=".adb.AdbActivity" />
@@ -126,13 +126,31 @@
         <activity android:name=".permission.PermissionActivity" />
         <activity android:name=".aop.aspectj.AspectjActivity" />
         <activity android:name=".camera.Camera1Activity">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+        <activity android:name=".handler.HandlerInLooperActivity" />
+        <activity android:name=".customview.CombinedViewActivity" >
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+    </activity>
+        <activity android:name=".customview.ViewStubActivity" >
+
+        </activity>
+        <activity android:name=".mat.MatActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".handler.HandlerInLooperActivity" />
+        <activity android:name=".mat.MatTestActivity" />
 
         <service android:name=".service.MyService1" />
         <service android:name=".service.MyService2" />
