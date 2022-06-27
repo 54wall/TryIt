@@ -1,0 +1,37 @@
+plugins {
+    id 'com.android.library'
+}
+def cfg = rootProject.ext
+android {
+    compileSdk cfg.android.compileSdk
+
+    defaultConfig {
+        minSdk cfg.android.minSdk
+        targetSdk cfg.android.targetSdk
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    api cfg.library.appcompat
+    api cfg.library.material
+    api cfg.library.constraintlayout
+    api cfg.libARouter
+    api cfg.libGson
+//    api project(':modulesBase:libRouter')
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}

@@ -1,0 +1,37 @@
+plugins {
+    id 'com.android.application'
+}
+
+def cfg = rootProject.ext
+android {
+    compileSdk cfg.android.compileSdk
+
+    defaultConfig {
+        applicationId cfg.applicationId.app
+        minSdk cfg.android.minSdk
+        targetSdk cfg.android.targetSdk
+        versionCode cfg.android.versionCode
+        versionName cfg.android.versionName
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation project(':modulesBase:libBase')
+
+    if (!cfg.isDebug) {
+        implementation project(':modulesCore:main')
+        implementation project(':modulesCore:login')
+    }
+}
