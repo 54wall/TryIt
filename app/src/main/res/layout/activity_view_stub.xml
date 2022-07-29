@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/btn_update"
+        android:text="update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tv_kid_online"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="10dp"
+        android:text="tv_kid_online"
+        android:textSize="14sp" />
+
+    <ListView
+        android:divider="@color/colorPrimary"
+        android:cacheColorHint="@color/colorPrimaryDark"
+        android:dividerHeight="0dp"
+        android:listSelector="@android:color/transparent"
+        android:id="@+id/lv_kid_online"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true" >
+
+    </ListView>
+
+    <ViewStub
+        android:id="@+id/emptyView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inflatedId="@+id/view_id_after_inflate"
+        android:layout="@layout/view_empty" />
+
+</LinearLayout>

@@ -21,7 +21,7 @@ public class JDGUIRemarkRemover {
     };
 
     public static void main(String[] args) {
-        String filePath = "D:\\1519classes.jar.src\\tendyron";  //放待处理的文件路径或者文件夹路径
+        String filePath = "D:\\1519classes.jar.src\\";  //放待处理的文件路径或者文件夹路径
 
         JDGUIRemarkRemover jdGUIRemarkRemover = new JDGUIRemarkRemover();
         if (jdGUIRemarkRemover.process(filePath)) {

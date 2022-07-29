@@ -76,7 +76,7 @@ public class SideBarActivity extends BaseActivity {
         cityList.clear();
         String[] strings = {"#北京", "#Beijing", "#Shanghai", "上海", "北京", "杭州", "广州", "南京", "苏州", "深圳", "成都", "重庆", "天津", "宁波", "扬州", "无锡", "福州", "厦门", "武汉", "西安", "沈阳", "大连", "青岛", "济南", "海口", "石家庄",
                 "唐山", "秦皇岛", "邯郸", "邢台", "保定", "张家口", "承德", "沧州", "廊坊", "衡水", "太原"};
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < strings.length; i++) {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("Name", strings[i]);
             map.put("Phone", "18912345678");

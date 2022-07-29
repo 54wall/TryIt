@@ -38,21 +38,25 @@ public class SideBar extends View {
 
     public SideBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        Log.e(TAG,"super(context, attrs, defStyleAttr)");
         init(context);
     }
 
     public SideBar(Context context, AttributeSet attrs) {
         super(context, attrs);
+        Log.e(TAG,"SideBar(Context context, AttributeSet attrs)");
         init(context);
     }
 
     public SideBar(Context context) {
         super(context);
+        Log.e(TAG,"SideBar(Context context)");
         init(context);
     }
 
     // 初始化操作
     private void init(Context context) {
+        Log.e(TAG,"init");
         textRect = new Rect();
         characterPaint = new Paint();
 //        characterPaint.setColor(Color.parseColor("#BEBEBE"));
@@ -62,6 +66,7 @@ public class SideBar extends View {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+        Log.e(TAG,"onLayout");
         if (changed) { // 在这里测量SideBar的高度和宽度
             width = getMeasuredWidth();
             height = getMeasuredHeight();
@@ -76,6 +81,7 @@ public class SideBar extends View {
 
     // 画出SideBar上的字母
     private void drawCharacters(Canvas canvas) {
+        Log.e(TAG,"drawCharacters");
         for (int i = 0; i < CHARACTERS.length; i++) {
             String s = CHARACTERS[i];
             // 获取画字母的矩形区域
@@ -88,6 +94,7 @@ public class SideBar extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        Log.e(TAG,"onDraw");
         drawCharacters(canvas);
     }
 
@@ -109,6 +116,7 @@ public class SideBar extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Log.e(TAG,"onTouchEvent");
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
