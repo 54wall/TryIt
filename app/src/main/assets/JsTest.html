@@ -1,0 +1,41 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" dir="ltr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <script type="text/javascript">
+        function showToast(toast) {
+            javascript:‘.showToast(toast);
+        }
+        function toActivity() {
+            javascript:jsTest.toActivity();
+        }
+        function showDialog(msg1,msg2) {
+            javascript:jsTest.showDialog(msg1,msg2);
+        }
+        function sum(a,b){
+            return a+b;
+        }
+        function setColor(){
+            var a = document.getElementById('text3');
+            a.style.backgroundColor="#00FF00";
+        }
+        function setColorAndText(color,text){
+            var a = document.getElementById('text3');
+            a.style.backgroundColor=color;
+            a.innerHTML = text;
+        }
+
+    </script>
+
+</head>
+
+<body>
+<p id="text1">text1:点击按键0 显示Toast信息</p>
+<input type="button" value="按键0" onClick="showToast('Js调用Android方法显示Toast成功！')"/>
+<p id="text2">text2:点击按键1 执行Activity跳转</p>
+<input type="button" value="按键1" onClick="toActivity()"/>
+<p>text2:点击按键2 显示弹框</p>
+<input type="button" value="按键2" onClick="showDialog('测试弹窗','测试成功')"/>
+<p id="text3">text3:点击底部按钮，修改当前文字或文字背景颜色</p>
+</body>
+</html>
