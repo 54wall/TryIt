@@ -5,8 +5,11 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.1"
-
+        //使用4.1.1 报错 A problem occurred configuring project ':app'.
+        //> No such property: variantConfiguration for class: com.android.build.gradle.internal.variant.ApplicationVariantData
+//        classpath "com.android.tools.build:gradle:4.1.1"
+        classpath 'com.android.tools.build:gradle:3.4.1'
+        classpath "com.tencent.tinker:tinker-patch-gradle-plugin:${TINKER_VERSION}"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
