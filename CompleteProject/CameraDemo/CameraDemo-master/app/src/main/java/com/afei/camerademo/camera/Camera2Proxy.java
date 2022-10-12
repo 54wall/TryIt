@@ -18,6 +18,7 @@ import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
 import android.os.Handler;
@@ -29,6 +30,7 @@ import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -57,6 +59,8 @@ public class Camera2Proxy {
     private int mDisplayRotate = 0;
     private int mDeviceOrientation = 0; // 设备方向，由相机传感器获取
     private int mZoom = 1; // 缩放
+
+    private ImageReader mReader;//camera2没有预览回调，需要通过ImageReader获取数据
 
     /**
      * 打开摄像头的回调
@@ -154,13 +158,42 @@ public class Camera2Proxy {
 
     private void initPreviewRequest() {
         try {
+            //设置捕获请求为预览（还有其它，如拍照、录像）
             mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            //可以通过这个set(key,value)方法，设置曝光啊，自动聚焦等参数！！
+            //mCaptureBuilder.set(CaptureRequest.CONTROL_AE_MODE,CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
             if (mPreviewSurfaceTexture != null && mPreviewSurface == null) { // use texture view
                 mPreviewSurfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
                 mPreviewSurface = new Surface(mPreviewSurfaceTexture);
             }
+            //获取ImageReader(ImageFormat不要使用jpeg,预览会出现卡顿)
+            mReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
+            //设置有图像数据流时监听
+            mReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
+                @Override
+                public void onImageAvailable(ImageReader reader) {
+                    Log.e(TAG,"218 onImageAvailable");
+                    //需要调用acquireLatestImage()和close(),不然会卡顿
+                    Image image = reader.acquireLatestImage();
+                    //将这帧数据转成字节数组，类似于Camera1的PreviewCallback回调的预览帧数据
+                    ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+                    byte[] data = new byte[buffer.remaining()];
+                    buffer.get(data);
+                    //Log.d(TAG, "onImageAvailable: data size"+data.length);
+                    image.close();
+                }
+            }, mBackgroundHandler);
+            //设置预览界面为数据的显示,增加mReader获取
             mPreviewRequestBuilder.addTarget(mPreviewSurface); // 设置预览输出的 Surface
-            mCameraDevice.createCaptureSession(Arrays.asList(mPreviewSurface, mImageReader.getSurface()),
+            mPreviewRequestBuilder.addTarget(mReader.getSurface());
+            /**
+             * 报错：2022-10-12 14:47:37.300 16455-16503/com.afei.camerademo E/AndroidRuntime: FATAL EXCEPTION: CameraBackground
+             *     Process: com.afei.camerademo, PID: 16455
+             *     java.lang.IllegalArgumentException: CaptureRequest contains unconfigured Input/Output Surface!
+             *
+             *     Arrays.asList(mPreviewSurface, mImageReader.getSurface()),中添加mReader.getSurface()
+             */
+            mCameraDevice.createCaptureSession(Arrays.asList(mReader.getSurface(),mPreviewSurface, mImageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
 
                         @Override
