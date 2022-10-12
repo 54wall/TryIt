@@ -42,6 +42,7 @@
         <activity
             android:name=".glsurfaceview.GLSurfaceCamera2Activity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".BaseCameraActivity" />
     </application>
 
 </manifest>

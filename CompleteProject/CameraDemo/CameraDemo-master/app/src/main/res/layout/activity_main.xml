@@ -62,4 +62,12 @@
         android:text="GLSurfaceView + Camera2"
         android:textAllCaps="false"/>
 
+    <Button
+        android:id="@+id/camera_btn7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="startCameraActivity"
+        android:text="startBaseCameraActivity"
+        android:textAllCaps="false"/>
+
 </LinearLayout>

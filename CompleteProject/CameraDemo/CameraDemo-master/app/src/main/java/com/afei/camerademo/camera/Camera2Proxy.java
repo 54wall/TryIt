@@ -175,12 +175,15 @@ public class Camera2Proxy {
                     Log.e(TAG,"218 onImageAvailable");
                     //需要调用acquireLatestImage()和close(),不然会卡顿
                     Image image = reader.acquireLatestImage();
-                    //将这帧数据转成字节数组，类似于Camera1的PreviewCallback回调的预览帧数据
-                    ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-                    byte[] data = new byte[buffer.remaining()];
-                    buffer.get(data);
-                    //Log.d(TAG, "onImageAvailable: data size"+data.length);
-                    image.close();
+                    if(image!=null){
+                        //将这帧数据转成字节数组，类似于Camera1的PreviewCallback回调的预览帧数据
+                        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+                        byte[] data = new byte[buffer.remaining()];
+                        buffer.get(data);
+                        //Log.d(TAG, "onImageAvailable: data size"+data.length);
+                        image.close();
+                    }
+
                 }
             }, mBackgroundHandler);
             //设置预览界面为数据的显示,增加mReader获取

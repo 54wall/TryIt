@@ -51,6 +51,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.camera_btn6:
                 intent = new Intent(this, GLSurfaceCamera2Activity.class);
                 break;
+
+            case R.id.camera_btn7:
+                intent = new Intent(this, BaseCameraActivity.class);
+                break;
         }
         startActivity(intent);
     }
