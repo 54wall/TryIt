@@ -52,6 +52,7 @@ public class Camera2Proxy {
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
     private ImageReader mImageReader;
+    private ImageReader mReader;//camera2没有预览回调，需要通过ImageReader获取数据
     private Surface mPreviewSurface;
     private SurfaceTexture mPreviewSurfaceTexture;
     private OrientationEventListener mOrientationEventListener;
@@ -59,8 +60,6 @@ public class Camera2Proxy {
     private int mDisplayRotate = 0;
     private int mDeviceOrientation = 0; // 设备方向，由相机传感器获取
     private int mZoom = 1; // 缩放
-
-    private ImageReader mReader;//camera2没有预览回调，需要通过ImageReader获取数据
 
     /**
      * 打开摄像头的回调
@@ -167,14 +166,17 @@ public class Camera2Proxy {
                 mPreviewSurface = new Surface(mPreviewSurfaceTexture);
             }
             //获取ImageReader(ImageFormat不要使用jpeg,预览会出现卡顿)
-            mReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
+            //通过mReader设置图像数据分辨率，可以与预览分辨率不同
+            mReader = ImageReader.newInstance(640, 480, ImageFormat.YUV_420_888, 2);
+//            mReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
             //设置有图像数据流时监听
             mReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
-                    Log.e(TAG,"218 onImageAvailable");
+//                    Log.e(TAG,"onImageAvailable");
                     //需要调用acquireLatestImage()和close(),不然会卡顿
                     Image image = reader.acquireLatestImage();
+                    Log.e(TAG,"image.getHeight():"+image.getHeight());
                     if(image!=null){
                         //将这帧数据转成字节数组，类似于Camera1的PreviewCallback回调的预览帧数据
                         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
@@ -182,6 +184,8 @@ public class Camera2Proxy {
                         buffer.get(data);
                         //Log.d(TAG, "onImageAvailable: data size"+data.length);
                         image.close();
+                    }else{
+                        Log.e(TAG,"image==null");
                     }
 
                 }
