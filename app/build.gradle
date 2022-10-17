@@ -13,13 +13,13 @@ android {
         releasekey {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
-            storeFile file('D:\\Develop\\keystore\\debug.keystore')
+            storeFile file('D:\\Develop\\keystore\\android.jks')
             storePassword 'android'
         }
         debug {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
-            storeFile file('D:\\Develop\\keystore\\debug.keystore')
+            storeFile file('D:\\Develop\\keystore\\android.jks')
             storePassword 'android'
         }
     }

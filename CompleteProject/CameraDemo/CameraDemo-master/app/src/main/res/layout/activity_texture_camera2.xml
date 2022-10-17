@@ -57,6 +57,14 @@
         android:layout_marginBottom="20dp"
         android:src="@drawable/click_button_selector"/>
 
+    <Button
+        android:id="@+id/btn_record"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:text="record"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="31dp" />
+
     <ImageView
         android:id="@+id/picture_iv"
         android:layout_width="60dp"

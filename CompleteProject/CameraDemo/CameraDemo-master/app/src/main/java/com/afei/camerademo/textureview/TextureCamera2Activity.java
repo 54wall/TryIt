@@ -7,10 +7,12 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.afei.camerademo.ImageUtils;
@@ -30,7 +32,7 @@ public class TextureCamera2Activity extends AppCompatActivity implements View.On
     private Camera2TextureView mCameraView;
 
     private Camera2Proxy mCameraProxy;
-
+    private Button mBtnRecord;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,11 +52,24 @@ public class TextureCamera2Activity extends AppCompatActivity implements View.On
         mPictureIv.setImageBitmap(ImageUtils.getLatestThumbBitmap());
         mCameraView = findViewById(R.id.camera_view);
         mCameraProxy = mCameraView.getCameraProxy();
+        mBtnRecord = findViewById(R.id.btn_record);
+        mBtnRecord.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.btn_record:
+                if (!mCameraProxy.isRecordingVideo()){
+                    mCameraProxy.startRecording();
+                    mBtnRecord.setText("end");
+
+                } else {
+                    mCameraProxy.stopRecording();
+                    mBtnRecord.setText("start");
+                }
+                break;
+
             case R.id.toolbar_close_iv:
                 finish();
                 break;

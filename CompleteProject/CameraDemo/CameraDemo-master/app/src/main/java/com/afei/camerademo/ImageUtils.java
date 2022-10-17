@@ -109,18 +109,24 @@ public class ImageUtils {
 
     public static Bitmap getLatestThumbBitmap() {
         Bitmap bitmap = null;
-        // 按照时间顺序降序查询
-        Cursor cursor = MediaStore.Images.Media.query(sContext.getContentResolver(), MediaStore.Images.Media
-                .EXTERNAL_CONTENT_URI, STORE_IMAGES, null, null, MediaStore.Files.FileColumns.DATE_MODIFIED + " DESC");
-        boolean first = cursor.moveToFirst();
-        if (first) {
-            long id = cursor.getLong(0);
-            bitmap = MediaStore.Images.Thumbnails.getThumbnail(sContext.getContentResolver(), id, MediaStore.Images
-                    .Thumbnails.MICRO_KIND, null);
-            Log.d(TAG, "bitmap width: " + bitmap.getWidth());
-            Log.d(TAG, "bitmap height: " + bitmap.getHeight());
+        try {
+            // 按照时间顺序降序查询
+            Cursor cursor = MediaStore.Images.Media.query(sContext.getContentResolver(), MediaStore.Images.Media
+                    .EXTERNAL_CONTENT_URI, STORE_IMAGES, null, null, MediaStore.Files.FileColumns.DATE_MODIFIED + " DESC");
+            boolean first = cursor.moveToFirst();
+            if (first) {
+                long id = cursor.getLong(0);
+                bitmap = MediaStore.Images.Thumbnails.getThumbnail(sContext.getContentResolver(), id, MediaStore.Images
+                        .Thumbnails.MICRO_KIND, null);
+                Log.d(TAG, "bitmap width: " + bitmap.getWidth());
+                Log.d(TAG, "bitmap height: " + bitmap.getHeight());
+            }
+            cursor.close();
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        cursor.close();
+
+
         return bitmap;
     }
 }

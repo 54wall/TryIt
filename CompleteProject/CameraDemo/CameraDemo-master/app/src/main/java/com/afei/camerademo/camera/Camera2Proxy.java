@@ -20,20 +20,27 @@ import android.hardware.camera2.params.MeteringRectangle;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.media.MediaRecorder;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.Size;
+import android.util.SparseIntArray;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 public class Camera2Proxy {
 
@@ -114,6 +121,7 @@ public class Camera2Proxy {
             // 预览大小，根据上面选择的拍照图片的长宽比，选择一个和控件长宽差不多的大小
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height, largest);
             Log.d(TAG, "preview size: " + mPreviewSize.getWidth() + "*" + mPreviewSize.getHeight());
+            initCamera();
             // 打开摄像头
             mCameraManager.openCamera(Integer.toString(mCameraId), mStateCallback, mBackgroundHandler);
         } catch (CameraAccessException e) {
@@ -176,16 +184,17 @@ public class Camera2Proxy {
 //                    Log.e(TAG,"onImageAvailable");
                     //需要调用acquireLatestImage()和close(),不然会卡顿
                     Image image = reader.acquireLatestImage();
-                    Log.e(TAG,"image.getHeight():"+image.getHeight());
+
                     if(image!=null){
+                        Log.e(TAG,"image.getHeight():"+image.getHeight());
                         //将这帧数据转成字节数组，类似于Camera1的PreviewCallback回调的预览帧数据
                         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                         byte[] data = new byte[buffer.remaining()];
                         buffer.get(data);
                         //Log.d(TAG, "onImageAvailable: data size"+data.length);
                         image.close();
-                    }else{
-                        Log.e(TAG,"image==null");
+                    } else {
+                        Log.e(TAG, "image==null");
                     }
 
                 }
@@ -200,7 +209,7 @@ public class Camera2Proxy {
              *
              *     Arrays.asList(mPreviewSurface, mImageReader.getSurface()),中添加mReader.getSurface()
              */
-            mCameraDevice.createCaptureSession(Arrays.asList(mReader.getSurface(),mPreviewSurface, mImageReader.getSurface()),
+            mCameraDevice.createCaptureSession(Arrays.asList(mReader.getSurface(), mPreviewSurface, mImageReader.getSurface()),
                     new CameraCaptureSession.StateCallback() {
 
                         @Override
@@ -291,7 +300,8 @@ public class Camera2Proxy {
     }
 
     private int getJpegOrientation(int deviceOrientation) {
-        if (deviceOrientation == android.view.OrientationEventListener.ORIENTATION_UNKNOWN) return 0;
+        if (deviceOrientation == android.view.OrientationEventListener.ORIENTATION_UNKNOWN)
+            return 0;
         int sensorOrientation = mCameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
         // Round device orientation to a multiple of 90
         deviceOrientation = (deviceOrientation + 45) / 90 * 90;
@@ -304,6 +314,232 @@ public class Camera2Proxy {
         int jpegOrientation = (sensorOrientation + deviceOrientation + 360) % 360;
         Log.d(TAG, "jpegOrientation: " + jpegOrientation);
         return jpegOrientation;
+    }
+
+
+    private MediaRecorder mMediaRecorder = null;
+    private boolean mIsRecordingVideo = false;
+
+    private void initCamera() {
+
+        //获取摄像头支持的配置属性
+        StreamConfigurationMap map = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+        //获取最佳的录像尺寸
+        mVideoSize = getVideoSize(map.getOutputSizes(MediaRecorder.class));
+        if (mMediaRecorder == null) {
+            mMediaRecorder = new MediaRecorder();
+        }
+
+    }
+
+    public boolean isRecordingVideo() {
+        return mIsRecordingVideo;
+    }
+
+    /**
+     * 开始录像
+     */
+    public void startRecording() {
+//        initCamera();//必须放在最开始初始化
+        prepareRecording();
+        mMediaRecorder.start();
+        mIsRecordingVideo = true;
+    }
+
+    /**
+     * 停止录像
+     */
+    public void stopRecording() {
+        mMediaRecorder.stop();
+        mMediaRecorder.reset();
+        mIsRecordingVideo = false;
+//        startPreview();
+        startPreviewRecord();
+
+    }
+
+    private void startPreviewRecord() {
+        Log.d(TAG, "startPreview: thread = " + mBackgroundThread + " handler = " + mBackgroundHandler);
+        if (null == mCameraDevice || /*!mTextureView.isAvailable() ||*/ null == mPreviewSize) {
+            Log.e(TAG, "mCameraDevice == null or mMyTextureView is not available!");
+            return;
+        }
+        closePreviewSession();
+        //设置预览大小
+        Log.d(TAG, "startPreview: width = " + mPreviewSize.getWidth() + " height = " + mPreviewSize.getHeight());
+        mPreviewSurfaceTexture.setDefaultBufferSize(1280, 720);
+        Surface surface = new Surface(mPreviewSurfaceTexture);
+        List<Surface> surfaceList = new ArrayList<>();
+        surfaceList.add(surface);
+        surfaceList.add(mImageReader.getSurface());
+        try {
+            //设置ZSL拍照模式
+            mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_ZERO_SHUTTER_LAG);
+            //mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            //设置Preview的参数
+            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_ANTIBANDING_MODE_AUTO);
+            mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+            mPreviewRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,0);
+            mPreviewRequestBuilder.addTarget(surface);
+            mCameraDevice.createCaptureSession(surfaceList, new CameraCaptureSession.StateCallback() {
+                @Override
+                public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+                    Log.d(TAG, "startPreview onConfigured");
+                    if (mCameraDevice == null) {
+                        return;
+                    }
+                    try {
+                        mCaptureSession = cameraCaptureSession;
+                        mPreviewRequest = mPreviewRequestBuilder.build();
+                        mCaptureSession.setRepeatingRequest(mPreviewRequest, null, mBackgroundHandler);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+                    showToast("预览失败！");
+                }
+            }, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 显示toast信息
+     */
+    private void showToast(String text) {
+        if (!text.equals("")) {
+            Toast.makeText(mActivity, text, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Recording准备工作
+     */
+    private void prepareRecording() {
+        try {
+            closePreviewSession();
+            setUpMediaRecorder();
+//            SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
+            mPreviewSurfaceTexture.setDefaultBufferSize(1280, 720);
+
+
+            mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
+            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);
+
+            List<Surface> surfaces = new ArrayList<>();
+            Surface textureSurface = new Surface(mPreviewSurfaceTexture);
+            surfaces.add(new Surface(mPreviewSurfaceTexture));
+            mPreviewRequestBuilder.addTarget(textureSurface);
+
+            Surface mediaSurface = mMediaRecorder.getSurface();
+            surfaces.add(mediaSurface);
+            mPreviewRequestBuilder.addTarget(mediaSurface);
+
+            mCameraDevice.createCaptureSession(surfaces, new CameraCaptureSession.StateCallback() {
+                @Override
+                public void onConfigured(@NonNull CameraCaptureSession session) {
+                    try {
+                        mCaptureSession = session;
+                        mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
+//                        startPreview();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        showToast("创建RecordRequest失败！");
+                    }
+                }
+
+                @Override
+                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+
+                }
+            }, null);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    /**
+     * 停止预览session
+     */
+    private void closePreviewSession() {
+        if (mCaptureSession != null) {
+            mCaptureSession.close();
+            mCaptureSession = null;
+        }
+    }
+
+    /**
+     * 设置MediaRecorder
+     */
+    private void setUpMediaRecorder() throws IOException {
+        Log.d(TAG, "setUpMediaRecorder!");
+        //Video的设置必须遵循严格的顺序
+        mMediaRecorder.reset();
+        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+        mMediaRecorder.setVideoEncodingBitRate(10000000);
+        mMediaRecorder.setVideoFrameRate(30);
+        mMediaRecorder.setVideoEncodingBitRate(2500000);
+        mMediaRecorder.setOrientationHint(getOrientation(mSreenRotation));
+        mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
+        //mMediaRecorder.setVideoSize(1280,720);
+        Log.d(TAG, "setUpMediaRecorder, video size =" + mVideoSize.getWidth() + "x" + mVideoSize.getHeight());
+        String filePath = Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera/" + "WJVID_" + System.currentTimeMillis();
+        mMediaRecorder.setOutputFile(filePath + ".mp4");
+        mMediaRecorder.prepare();
+    }
+
+    private Size mVideoSize;
+
+    private int mSreenRotation;
+
+    //屏幕方向
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    private static int SCREEN_ORIENTATION_0 = 0;
+    private static int SCREEN_ORIENTATION_90 = 1;
+    private static int SCREEN_ORIENTATION_180 = 2;
+    private static int SCREEN_ORIENTATION_270 = 3;
+
+    static {
+        ORIENTATIONS.append(SCREEN_ORIENTATION_0, 90);
+        ORIENTATIONS.append(SCREEN_ORIENTATION_90, 0);
+        ORIENTATIONS.append(SCREEN_ORIENTATION_180, 270);
+        ORIENTATIONS.append(SCREEN_ORIENTATION_270, 180);
+    }
+
+    /**
+     * 设置Video分辨率大小
+     */
+    private Size getVideoSize(Size[] sizes) {
+        for (Size size : sizes) {
+            Log.d(TAG, "getVideoSize: " + size.getWidth() + "x" + size.getHeight());
+            if (size.getWidth() == size.getHeight() * 4 / 3 && size.getWidth() <= 1080) {
+
+                return size;
+            }
+        }
+        Log.e(TAG, "Couldn't find any suitable video size");
+        return sizes[sizes.length - 1];
+    }
+
+    /**
+     * 获取拍照方向
+     */
+    private int getOrientation(int rotation) {
+        return ORIENTATIONS.get(rotation);
     }
 
     public boolean isFrontCamera() {
