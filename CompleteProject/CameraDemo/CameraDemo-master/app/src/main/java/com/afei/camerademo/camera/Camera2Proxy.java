@@ -58,8 +58,8 @@ public class Camera2Proxy {
     private CaptureRequest mPreviewRequest;
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
-    private ImageReader mImageReader;
-    private ImageReader mReader;//camera2没有预览回调，需要通过ImageReader获取数据
+    private ImageReader mImageReaderTakePicture;
+    private ImageReader mImageReaderByte;//camera2没有预览回调，需要通过ImageReader获取数据
     private Surface mPreviewSurface;
     private SurfaceTexture mPreviewSurfaceTexture;
     private OrientationEventListener mOrientationEventListener;
@@ -117,7 +117,7 @@ public class Camera2Proxy {
             Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)), new
                     CompareSizesByArea());
             Log.d(TAG, "picture size: " + largest.getWidth() + "*" + largest.getHeight());
-            mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, 2);
+            mImageReaderTakePicture = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, 2);
             // 预览大小，根据上面选择的拍照图片的长宽比，选择一个和控件长宽差不多的大小
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height, largest);
             Log.d(TAG, "preview size: " + mPreviewSize.getWidth() + "*" + mPreviewSize.getHeight());
@@ -139,20 +139,20 @@ public class Camera2Proxy {
             mCameraDevice.close();
             mCameraDevice = null;
         }
-        if (mImageReader != null) {
-            mImageReader.close();
-            mImageReader = null;
+        if (mImageReaderTakePicture != null) {
+            mImageReaderTakePicture.close();
+            mImageReaderTakePicture = null;
         }
         mOrientationEventListener.disable();
         stopBackgroundThread(); // 对应 openCamera() 方法中的 startBackgroundThread()
     }
 
     public void setImageAvailableListener(ImageReader.OnImageAvailableListener onImageAvailableListener) {
-        if (mImageReader == null) {
+        if (mImageReaderTakePicture == null) {
             Log.w(TAG, "setImageAvailableListener: mImageReader is null");
             return;
         }
-        mImageReader.setOnImageAvailableListener(onImageAvailableListener, null);
+        mImageReaderTakePicture.setOnImageAvailableListener(onImageAvailableListener, null);
     }
 
     public void setPreviewSurface(SurfaceHolder holder) {
@@ -165,6 +165,7 @@ public class Camera2Proxy {
 
     private void initPreviewRequest() {
         try {
+            closePreviewSession();
             //设置捕获请求为预览（还有其它，如拍照、录像）
             mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             //可以通过这个set(key,value)方法，设置曝光啊，自动聚焦等参数！！
@@ -175,10 +176,10 @@ public class Camera2Proxy {
             }
             //获取ImageReader(ImageFormat不要使用jpeg,预览会出现卡顿)
             //通过mReader设置图像数据分辨率，可以与预览分辨率不同
-            mReader = ImageReader.newInstance(640, 480, ImageFormat.YUV_420_888, 2);
-//            mReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
+//            mImageReaderByte = ImageReader.newInstance(640, 480, ImageFormat.YUV_420_888, 2);
+            mImageReaderByte = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.YUV_420_888, 2);
             //设置有图像数据流时监听
-            mReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
+            mImageReaderByte.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
 //                    Log.e(TAG,"onImageAvailable");
@@ -201,7 +202,7 @@ public class Camera2Proxy {
             }, mBackgroundHandler);
             //设置预览界面为数据的显示,增加mReader获取
             mPreviewRequestBuilder.addTarget(mPreviewSurface); // 设置预览输出的 Surface
-            mPreviewRequestBuilder.addTarget(mReader.getSurface());
+            mPreviewRequestBuilder.addTarget(mImageReaderByte.getSurface());
             /**
              * 报错：2022-10-12 14:47:37.300 16455-16503/com.afei.camerademo E/AndroidRuntime: FATAL EXCEPTION: CameraBackground
              *     Process: com.afei.camerademo, PID: 16455
@@ -209,7 +210,7 @@ public class Camera2Proxy {
              *
              *     Arrays.asList(mPreviewSurface, mImageReader.getSurface()),中添加mReader.getSurface()
              */
-            mCameraDevice.createCaptureSession(Arrays.asList(mReader.getSurface(), mPreviewSurface, mImageReader.getSurface()),
+            mCameraDevice.createCaptureSession(Arrays.asList(mImageReaderByte.getSurface(), mPreviewSurface, mImageReaderTakePicture.getSurface()),
                     new CameraCaptureSession.StateCallback() {
 
                         @Override
@@ -267,7 +268,7 @@ public class Camera2Proxy {
         try {
             CaptureRequest.Builder captureBuilder = mCameraDevice.createCaptureRequest(CameraDevice
                     .TEMPLATE_STILL_CAPTURE);
-            captureBuilder.addTarget(mImageReader.getSurface());
+            captureBuilder.addTarget(mImageReaderTakePicture.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getJpegOrientation(mDeviceOrientation));
             // 预览如果有放大，拍照的时候也应该保存相同的缩放
@@ -353,59 +354,8 @@ public class Camera2Proxy {
         mMediaRecorder.stop();
         mMediaRecorder.reset();
         mIsRecordingVideo = false;
-//        startPreview();
-        startPreviewRecord();
-
-    }
-
-    private void startPreviewRecord() {
-        Log.d(TAG, "startPreview: thread = " + mBackgroundThread + " handler = " + mBackgroundHandler);
-        if (null == mCameraDevice || /*!mTextureView.isAvailable() ||*/ null == mPreviewSize) {
-            Log.e(TAG, "mCameraDevice == null or mMyTextureView is not available!");
-            return;
-        }
-        closePreviewSession();
-        //设置预览大小
-        Log.d(TAG, "startPreview: width = " + mPreviewSize.getWidth() + " height = " + mPreviewSize.getHeight());
-        mPreviewSurfaceTexture.setDefaultBufferSize(1280, 720);
-        Surface surface = new Surface(mPreviewSurfaceTexture);
-        List<Surface> surfaceList = new ArrayList<>();
-        surfaceList.add(surface);
-        surfaceList.add(mImageReader.getSurface());
-        try {
-            //设置ZSL拍照模式
-            mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_ZERO_SHUTTER_LAG);
-            //mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            //设置Preview的参数
-            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_ANTIBANDING_MODE_AUTO);
-            mPreviewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
-            mPreviewRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION,0);
-            mPreviewRequestBuilder.addTarget(surface);
-            mCameraDevice.createCaptureSession(surfaceList, new CameraCaptureSession.StateCallback() {
-                @Override
-                public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
-                    Log.d(TAG, "startPreview onConfigured");
-                    if (mCameraDevice == null) {
-                        return;
-                    }
-                    try {
-                        mCaptureSession = cameraCaptureSession;
-                        mPreviewRequest = mPreviewRequestBuilder.build();
-                        mCaptureSession.setRepeatingRequest(mPreviewRequest, null, mBackgroundHandler);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-                    showToast("预览失败！");
-                }
-            }, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        initPreviewRequest();
+        startPreview();
     }
 
     /**
@@ -424,18 +374,13 @@ public class Camera2Proxy {
         try {
             closePreviewSession();
             setUpMediaRecorder();
-//            SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
             mPreviewSurfaceTexture.setDefaultBufferSize(1280, 720);
-
-
             mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);
-
             List<Surface> surfaces = new ArrayList<>();
             Surface textureSurface = new Surface(mPreviewSurfaceTexture);
             surfaces.add(new Surface(mPreviewSurfaceTexture));
             mPreviewRequestBuilder.addTarget(textureSurface);
-
             Surface mediaSurface = mMediaRecorder.getSurface();
             surfaces.add(mediaSurface);
             mPreviewRequestBuilder.addTarget(mediaSurface);
