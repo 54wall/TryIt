@@ -44,7 +44,7 @@ import java.util.List;
 
 public class Camera2Proxy {
 
-    private static final String TAG = "Camera2Proxy";
+    private static final String TAG = Camera2Proxy.class.getSimpleName();
 
     private Activity mActivity;
 
@@ -67,6 +67,24 @@ public class Camera2Proxy {
     private int mDisplayRotate = 0;
     private int mDeviceOrientation = 0; // 设备方向，由相机传感器获取
     private int mZoom = 1; // 缩放
+
+
+    private Size mVideoSize;
+    private int mSreenRotation;
+    //屏幕方向
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    private static int SCREEN_ORIENTATION_0 = 0;
+    private static int SCREEN_ORIENTATION_90 = 1;
+    private static int SCREEN_ORIENTATION_180 = 2;
+    private static int SCREEN_ORIENTATION_270 = 3;
+    static {
+        ORIENTATIONS.append(SCREEN_ORIENTATION_0, 90);
+        ORIENTATIONS.append(SCREEN_ORIENTATION_90, 0);
+        ORIENTATIONS.append(SCREEN_ORIENTATION_180, 270);
+        ORIENTATIONS.append(SCREEN_ORIENTATION_270, 180);
+    }
+    private MediaRecorder mMediaRecorder = null;
+    private boolean mIsRecordingVideo = false;
 
     /**
      * 打开摄像头的回调
@@ -121,7 +139,7 @@ public class Camera2Proxy {
             // 预览大小，根据上面选择的拍照图片的长宽比，选择一个和控件长宽差不多的大小
             mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height, largest);
             Log.d(TAG, "preview size: " + mPreviewSize.getWidth() + "*" + mPreviewSize.getHeight());
-            initCamera();
+            initMediaRecorder();
             // 打开摄像头
             mCameraManager.openCamera(Integer.toString(mCameraId), mStateCallback, mBackgroundHandler);
         } catch (CameraAccessException e) {
@@ -207,7 +225,6 @@ public class Camera2Proxy {
              * 报错：2022-10-12 14:47:37.300 16455-16503/com.afei.camerademo E/AndroidRuntime: FATAL EXCEPTION: CameraBackground
              *     Process: com.afei.camerademo, PID: 16455
              *     java.lang.IllegalArgumentException: CaptureRequest contains unconfigured Input/Output Surface!
-             *
              *     Arrays.asList(mPreviewSurface, mImageReader.getSurface()),中添加mReader.getSurface()
              */
             mCameraDevice.createCaptureSession(Arrays.asList(mImageReaderByte.getSurface(), mPreviewSurface, mImageReaderTakePicture.getSurface()),
@@ -318,10 +335,9 @@ public class Camera2Proxy {
     }
 
 
-    private MediaRecorder mMediaRecorder = null;
-    private boolean mIsRecordingVideo = false;
 
-    private void initCamera() {
+
+    private void initMediaRecorder() {
 
         //获取摄像头支持的配置属性
         StreamConfigurationMap map = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
@@ -341,7 +357,6 @@ public class Camera2Proxy {
      * 开始录像
      */
     public void startRecording() {
-//        initCamera();//必须放在最开始初始化
         prepareRecording();
         mMediaRecorder.start();
         mIsRecordingVideo = true;
@@ -390,8 +405,8 @@ public class Camera2Proxy {
                 public void onConfigured(@NonNull CameraCaptureSession session) {
                     try {
                         mCaptureSession = session;
-                        mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), null, mBackgroundHandler);
-//                        startPreview();
+                        mPreviewRequest = mPreviewRequestBuilder.build();
+                        startPreview();
                     } catch (Exception e) {
                         e.printStackTrace();
                         showToast("创建RecordRequest失败！");
@@ -445,24 +460,6 @@ public class Camera2Proxy {
         String filePath = Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera/" + "WJVID_" + System.currentTimeMillis();
         mMediaRecorder.setOutputFile(filePath + ".mp4");
         mMediaRecorder.prepare();
-    }
-
-    private Size mVideoSize;
-
-    private int mSreenRotation;
-
-    //屏幕方向
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-    private static int SCREEN_ORIENTATION_0 = 0;
-    private static int SCREEN_ORIENTATION_90 = 1;
-    private static int SCREEN_ORIENTATION_180 = 2;
-    private static int SCREEN_ORIENTATION_270 = 3;
-
-    static {
-        ORIENTATIONS.append(SCREEN_ORIENTATION_0, 90);
-        ORIENTATIONS.append(SCREEN_ORIENTATION_90, 0);
-        ORIENTATIONS.append(SCREEN_ORIENTATION_180, 270);
-        ORIENTATIONS.append(SCREEN_ORIENTATION_270, 180);
     }
 
     /**

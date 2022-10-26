@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/colorPrimary">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -24,12 +24,12 @@
                 android:layout_height="45dp"
                 android:layout_gravity="center_vertical"
                 android:padding="10dp"
-                android:src="@mipmap/ic_close"/>
+                android:src="@mipmap/ic_close" />
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
 
             <ImageView
                 android:id="@+id/toolbar_switch_iv"
@@ -37,7 +37,7 @@
                 android:layout_height="45dp"
                 android:layout_gravity="center_vertical"
                 android:padding="10dp"
-                android:src="@mipmap/ic_camera_switch"/>
+                android:src="@mipmap/ic_camera_switch" />
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
 
@@ -45,8 +45,15 @@
         android:id="@+id/camera_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar">
-    </com.afei.camerademo.textureview.Camera2TextureView>
+        android:layout_below="@+id/toolbar"/>
+
+    <Button
+        android:id="@+id/btn_record"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        android:text="record" />
 
     <ImageView
         android:id="@+id/take_picture_iv"
@@ -54,24 +61,16 @@
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:src="@drawable/click_button_selector"/>
-
-    <Button
-        android:id="@+id/btn_record"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:text="record"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="31dp" />
+        android:layout_margin="20dp"
+        android:src="@drawable/click_button_selector" />
 
     <ImageView
         android:id="@+id/picture_iv"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_margin="20dp"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop" />
 
 </RelativeLayout>
