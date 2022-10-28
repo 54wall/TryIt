@@ -8,12 +8,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.TextureView;
 
+import com.afei.camerademo.camera.Camera2HighSpeedProxy;
 import com.afei.camerademo.camera.Camera2Proxy;
 
 public class Camera2TextureView extends TextureView {
 
     private static final String TAG = "CameraTextureView";
-    private Camera2Proxy mCameraProxy;
+    private Camera2HighSpeedProxy mCameraProxy;
     private int mRatioWidth = 0;
     private int mRatioHeight = 0;
     private float mOldDistance;
@@ -36,7 +37,7 @@ public class Camera2TextureView extends TextureView {
     }
 
     private void init(Context context) {
-        mCameraProxy = new Camera2Proxy((Activity) context);
+        mCameraProxy = new Camera2HighSpeedProxy((Activity) context);
         setSurfaceTextureListener(mSurfaceTextureListener);
     }
 
@@ -82,7 +83,7 @@ public class Camera2TextureView extends TextureView {
         requestLayout();
     }
 
-    public Camera2Proxy getCameraProxy() {
+    public Camera2HighSpeedProxy getCameraProxy() {
         return mCameraProxy;
     }
 
@@ -101,8 +102,8 @@ public class Camera2TextureView extends TextureView {
             }
         }
     }
-
     @Override
+
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getPointerCount() == 1) {
             mCameraProxy.focusOnPoint((int) event.getX(), (int) event.getY(), getWidth(), getHeight());

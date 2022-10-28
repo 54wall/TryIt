@@ -10,6 +10,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraConstrainedHighSpeedCaptureSession;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
@@ -18,6 +19,7 @@ import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
@@ -26,7 +28,9 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.util.Range;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.OrientationEventListener;
@@ -53,7 +57,7 @@ public class Camera2HighSpeedProxy {
     private CameraManager mCameraManager; // 相机管理者
     private CameraCharacteristics mCameraCharacteristics; // 相机属性
     private CameraDevice mCameraDevice; // 相机对象
-    private CameraCaptureSession mCaptureSession;
+    private CameraConstrainedHighSpeedCaptureSession mCaptureSession;
     private CaptureRequest.Builder mPreviewRequestBuilder; // 相机预览请求的构造器
     private CaptureRequest mPreviewRequest;
     private Handler mBackgroundHandler;
@@ -121,24 +125,65 @@ public class Camera2HighSpeedProxy {
             }
         };
     }
-
+    private CustomSize customVideoSize;
     @SuppressLint("MissingPermission")
     public void openCamera(int width, int height) {
-        Log.v(TAG, "openCamera");
+        Log.e(TAG, "openCamera");
         startBackgroundThread(); // 对应 releaseCamera() 方法中的 stopBackgroundThread()
         mOrientationEventListener.enable();
         try {
             mCameraCharacteristics = mCameraManager.getCameraCharacteristics(Integer.toString(mCameraId));
             StreamConfigurationMap map = mCameraCharacteristics.get(CameraCharacteristics
                     .SCALER_STREAM_CONFIGURATION_MAP);
+            for (Range<Integer> fpsRange : map.getHighSpeedVideoFpsRanges()) {
+                Log.d(TAG, "openCamera: [width, height] = "+ fpsRange.toString());
+            }
+
+            List<CustomSize> highSpeedSizes = new ArrayList<>();
+
+            for (Range<Integer> fpsRange : map.getHighSpeedVideoFpsRanges()) {
+                if (fpsRange.getLower().equals(fpsRange.getUpper())) {
+                    for (Size size : map.getHighSpeedVideoSizesFor(fpsRange)) {
+                        CustomSize videoSize = new CustomSize(size.getWidth(), size.getHeight());
+                        if (videoSize.hasHighSpeedCamcorder(CameraMetadata.LENS_FACING_FRONT)) {
+                            videoSize.setFps(fpsRange.getUpper());
+                            Log.d(TAG, "Support HighSpeed video recording for " + videoSize.toString());
+                            highSpeedSizes.add(videoSize);
+                        }
+                    }
+                }
+            }
+
+            if (highSpeedSizes.isEmpty()) {
+                Log.e(TAG,"highSpeedSizes.isEmpty()");
+            }
+
+            Collections.sort(highSpeedSizes);
+//            mVideoSize = highSpeedSizes.get(highSpeedSizes.size() - 1);
+            customVideoSize = highSpeedSizes.get(highSpeedSizes.size() - 1);
+            /**
+             * java.lang.IllegalArgumentException: Surface size 1080x1920 is not part of the high speed supported size list [1280x720, 1920x1080]
+             */
+//            Size size = new Size(highSpeedSizes.get(highSpeedSizes.size() - 1).getHeight(),
+//                    highSpeedSizes.get(highSpeedSizes.size() - 1).getWidth());
+            Size size = new Size(highSpeedSizes.get(highSpeedSizes.size() - 1).getWidth(),
+                    highSpeedSizes.get(highSpeedSizes.size() - 1).getHeight());
+            Log.e(TAG,"……………………getHeight:"+size.getHeight()+",……………………getWidth"+size.getWidth());
+//            size = new Size(1920,1080);
+
+            mVideoSize = size;
+            mPreviewSize = mVideoSize;
+
+
             // 拍照大小，选择能支持的一个最大的图片大小
             Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)), new
                     CompareSizesByArea());
-            Log.d(TAG, "picture size: " + largest.getWidth() + "*" + largest.getHeight());
-            mImageReaderTakePicture = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, 2);
+            Log.e(TAG, "……………………picture size largest.getWidth(): " + largest.getWidth() + "*……………………largest.getHeight():" + largest.getHeight());
+//            mImageReaderTakePicture = ImageReader.newInstance(largest.getWidth(), largest.getHeight(), ImageFormat.JPEG, 2);
+            mImageReaderTakePicture = ImageReader.newInstance(largest.getHeight(), largest.getWidth(), ImageFormat.JPEG, 2);
             // 预览大小，根据上面选择的拍照图片的长宽比，选择一个和控件长宽差不多的大小
-            mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height, largest);
-            Log.d(TAG, "preview size: " + mPreviewSize.getWidth() + "*" + mPreviewSize.getHeight());
+//            mPreviewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height, largest);
+            Log.e(TAG, "preview size: " + mPreviewSize.getWidth() + "*" + mPreviewSize.getHeight());
             initMediaRecorder();
             // 打开摄像头
             mCameraManager.openCamera(Integer.toString(mCameraId), mStateCallback, mBackgroundHandler);
@@ -181,6 +226,7 @@ public class Camera2HighSpeedProxy {
         mPreviewSurfaceTexture = surfaceTexture;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void initPreviewRequest() {
         try {
             closePreviewSession();
@@ -192,6 +238,9 @@ public class Camera2HighSpeedProxy {
                 mPreviewSurfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
                 mPreviewSurface = new Surface(mPreviewSurfaceTexture);
             }
+            Log.e(TAG,"mPreviewSize.getWidth():"+mPreviewSize.getWidth()+",mPreviewSize.getHeight():"+mPreviewSize.getHeight());
+
+//            Log.e(TAG,"mPreviewSurface:"+mPreviewSurface.);
             //获取ImageReader(ImageFormat不要使用jpeg,预览会出现卡顿)
             //通过mReader设置图像数据分辨率，可以与预览分辨率不同
 //            mImageReaderByte = ImageReader.newInstance(640, 480, ImageFormat.YUV_420_888, 2);
@@ -205,7 +254,7 @@ public class Camera2HighSpeedProxy {
                     Image image = reader.acquireLatestImage();
 
                     if(image!=null){
-                        Log.e(TAG,"image.getHeight():"+image.getHeight());
+//                        Log.e(TAG,"image.getHeight():"+image.getHeight());
                         //将这帧数据转成字节数组，类似于Camera1的PreviewCallback回调的预览帧数据
                         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                         byte[] data = new byte[buffer.remaining()];
@@ -220,19 +269,23 @@ public class Camera2HighSpeedProxy {
             }, mBackgroundHandler);
             //设置预览界面为数据的显示,增加mReader获取
             mPreviewRequestBuilder.addTarget(mPreviewSurface); // 设置预览输出的 Surface
-            mPreviewRequestBuilder.addTarget(mImageReaderByte.getSurface());
+//            mPreviewRequestBuilder.addTarget(mImageReaderByte.getSurface());
             /**
              * 报错：2022-10-12 14:47:37.300 16455-16503/com.afei.camerademo E/AndroidRuntime: FATAL EXCEPTION: CameraBackground
              *     Process: com.afei.camerademo, PID: 16455
              *     java.lang.IllegalArgumentException: CaptureRequest contains unconfigured Input/Output Surface!
              *     Arrays.asList(mPreviewSurface, mImageReader.getSurface()),中添加mReader.getSurface()
              */
-            mCameraDevice.createCaptureSession(Arrays.asList(mImageReaderByte.getSurface(), mPreviewSurface, mImageReaderTakePicture.getSurface()),
+            /**
+             * Output surface list must not be null and the size must be no more than 2
+             */
+//            mPreviewSurface.
+            mCameraDevice.createConstrainedHighSpeedCaptureSession(Arrays.asList(/*mImageReaderByte.getSurface(),*/ mPreviewSurface/*, mImageReaderTakePicture.getSurface()*/),
                     new CameraCaptureSession.StateCallback() {
 
                         @Override
                         public void onConfigured(@NonNull CameraCaptureSession session) {
-                            mCaptureSession = session;
+                            mCaptureSession =(CameraConstrainedHighSpeedCaptureSession) session;
                             // 设置连续自动对焦
                             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest
                                     .CONTROL_AF_MODE_CONTINUOUS_PICTURE);
@@ -249,7 +302,7 @@ public class Camera2HighSpeedProxy {
                             Log.e(TAG, "ConfigureFailed. session: mCaptureSession");
                         }
                     }, mBackgroundHandler); // handle 传入 null 表示使用当前线程的 Looper
-        } catch (CameraAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -262,10 +315,41 @@ public class Camera2HighSpeedProxy {
         }
         try {
             // 开始预览，即一直发送预览的请求
-            mCaptureSession.setRepeatingRequest(mPreviewRequest, null, mBackgroundHandler);
+//            mCaptureSession.setRepeatingRequest(mPreviewRequest, null, mBackgroundHandler);
+
+            setUpCaptureRequestBuilder(mPreviewRequestBuilder);
+            List<CaptureRequest> mPreviewBuilderBurst = mCaptureSession.createHighSpeedRequestList(mPreviewRequestBuilder.build());
+            mCaptureSession.setRepeatingBurst(mPreviewBuilderBurst, null, mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Update the camera preview. {@link #startPreview()} needs to be called in advance.
+     */
+    private void updatePreviewHighSpeed() {
+        if (null == mCameraDevice) {
+            return;
+        }
+        try {
+            HandlerThread thread = new HandlerThread("CameraHighSpeedPreview");
+            thread.start();
+
+
+            setUpCaptureRequestBuilder(mPreviewRequestBuilder);
+            List<CaptureRequest> mPreviewBuilderBurst = mCaptureSession.createHighSpeedRequestList(mPreviewRequestBuilder.build());
+            mCaptureSession.setRepeatingBurst(mPreviewBuilderBurst, null, mBackgroundHandler);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setUpCaptureRequestBuilder(CaptureRequest.Builder builder) {
+        int fps = customVideoSize.getFps();
+        Range<Integer> fpsRange = Range.create(fps, fps);
+        builder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, fpsRange);
     }
 
     public void stopPreview() {
@@ -285,7 +369,7 @@ public class Camera2HighSpeedProxy {
         try {
             CaptureRequest.Builder captureBuilder = mCameraDevice.createCaptureRequest(CameraDevice
                     .TEMPLATE_STILL_CAPTURE);
-            captureBuilder.addTarget(mImageReaderTakePicture.getSurface());
+//            captureBuilder.addTarget(mImageReaderTakePicture.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, getJpegOrientation(mDeviceOrientation));
             // 预览如果有放大，拍照的时候也应该保存相同的缩放
@@ -335,16 +419,17 @@ public class Camera2HighSpeedProxy {
     }
 
 
-
+    CamcorderProfile profile;
 
     private void initMediaRecorder() {
 
         //获取摄像头支持的配置属性
         StreamConfigurationMap map = mCameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
         //获取最佳的录像尺寸
-        mVideoSize = getVideoSize(map.getOutputSizes(MediaRecorder.class));
+//        mVideoSize = getVideoSize(map.getOutputSizes(MediaRecorder.class));
         if (mMediaRecorder == null) {
             mMediaRecorder = new MediaRecorder();
+             profile = customVideoSize.getCamcorderProfile();
         }
 
     }
@@ -385,11 +470,13 @@ public class Camera2HighSpeedProxy {
     /**
      * Recording准备工作
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void prepareRecording() {
         try {
             closePreviewSession();
             setUpMediaRecorder();
-            mPreviewSurfaceTexture.setDefaultBufferSize(1280, 720);
+//            mPreviewSurfaceTexture.setDefaultBufferSize(1280, 720);
+            mPreviewSurfaceTexture.setDefaultBufferSize(customVideoSize.getWidth(), customVideoSize.getHeight());
             mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO);
             List<Surface> surfaces = new ArrayList<>();
@@ -400,11 +487,11 @@ public class Camera2HighSpeedProxy {
             surfaces.add(mediaSurface);
             mPreviewRequestBuilder.addTarget(mediaSurface);
 
-            mCameraDevice.createCaptureSession(surfaces, new CameraCaptureSession.StateCallback() {
+            mCameraDevice.createConstrainedHighSpeedCaptureSession(surfaces, new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession session) {
                     try {
-                        mCaptureSession = session;
+                        mCaptureSession =(CameraConstrainedHighSpeedCaptureSession) session;
                         mPreviewRequest = mPreviewRequestBuilder.build();
                         startPreview();
                     } catch (Exception e) {
@@ -444,18 +531,22 @@ public class Camera2HighSpeedProxy {
         Log.d(TAG, "setUpMediaRecorder!");
         //Video的设置必须遵循严格的顺序
         mMediaRecorder.reset();
+//        mMediaRecorder.setProfile(profile);
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+//        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+//        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+//        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
-        mMediaRecorder.setVideoEncodingBitRate(10000000);
-        mMediaRecorder.setVideoFrameRate(30);
-        mMediaRecorder.setVideoEncodingBitRate(2500000);
+//        mMediaRecorder.setVideoEncodingBitRate(10000000);
+//        mMediaRecorder.setVideoFrameRate(30);
+//        mMediaRecorder.setVideoEncodingBitRate(2500000);
         mMediaRecorder.setOrientationHint(getOrientation(mSreenRotation));
-        mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
-        //mMediaRecorder.setVideoSize(1280,720);
+//        mMediaRecorder.setVideoSize(mVideoSize.getWidth(), mVideoSize.getHeight());
+//        mMediaRecorder.setVideoSize(1080,1920);
+        mMediaRecorder.setProfile(profile);
+//        mMediaRecorder.setVideoFrameRate(profile.videoFrameRate);
+//        mMediaRecorder.setVideoEncodingBitRate(2500000);
         Log.d(TAG, "setUpMediaRecorder, video size =" + mVideoSize.getWidth() + "x" + mVideoSize.getHeight());
         String filePath = Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera/" + "WJVID_" + System.currentTimeMillis();
         mMediaRecorder.setOutputFile(filePath + ".mp4");

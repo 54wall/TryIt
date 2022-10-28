@@ -17,6 +17,7 @@ import android.widget.ImageView;
 
 import com.afei.camerademo.ImageUtils;
 import com.afei.camerademo.R;
+import com.afei.camerademo.camera.Camera2HighSpeedProxy;
 import com.afei.camerademo.camera.Camera2Proxy;
 
 import java.nio.ByteBuffer;
@@ -31,7 +32,7 @@ public class TextureCamera2Activity extends AppCompatActivity implements View.On
     private ImageView mPictureIv;
     private Camera2TextureView mCameraView;
 
-    private Camera2Proxy mCameraProxy;
+    private Camera2HighSpeedProxy mCameraProxy;
     private Button mBtnRecord;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
