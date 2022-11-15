@@ -76,6 +76,10 @@ dependencies {
     //Tinker的核心库
     implementation "com.tencent.tinker:tinker-android-lib:${TINKER_VERSION}"
 
+
+//    implementation 'com.tencent.bugly:nativecrashreport:3.9.0'
+//    implementation 'com.tencent.bugly:crashreport_upgrade:1.5.23'
+
     implementation 'com.android.support:multidex:1.0.3'
 }
 /**

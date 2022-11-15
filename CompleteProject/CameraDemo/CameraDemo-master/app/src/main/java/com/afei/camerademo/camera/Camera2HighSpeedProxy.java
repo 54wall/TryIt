@@ -159,18 +159,13 @@ public class Camera2HighSpeedProxy {
             }
 
             Collections.sort(highSpeedSizes);
-//            mVideoSize = highSpeedSizes.get(highSpeedSizes.size() - 1);
             customVideoSize = highSpeedSizes.get(highSpeedSizes.size() - 1);
             /**
              * java.lang.IllegalArgumentException: Surface size 1080x1920 is not part of the high speed supported size list [1280x720, 1920x1080]
              */
-//            Size size = new Size(highSpeedSizes.get(highSpeedSizes.size() - 1).getHeight(),
-//                    highSpeedSizes.get(highSpeedSizes.size() - 1).getWidth());
             Size size = new Size(highSpeedSizes.get(highSpeedSizes.size() - 1).getWidth(),
                     highSpeedSizes.get(highSpeedSizes.size() - 1).getHeight());
             Log.e(TAG,"……………………getHeight:"+size.getHeight()+",……………………getWidth"+size.getWidth());
-//            size = new Size(1920,1080);
-
             mVideoSize = size;
             mPreviewSize = mVideoSize;
 
@@ -239,8 +234,6 @@ public class Camera2HighSpeedProxy {
                 mPreviewSurface = new Surface(mPreviewSurfaceTexture);
             }
             Log.e(TAG,"mPreviewSize.getWidth():"+mPreviewSize.getWidth()+",mPreviewSize.getHeight():"+mPreviewSize.getHeight());
-
-//            Log.e(TAG,"mPreviewSurface:"+mPreviewSurface.);
             //获取ImageReader(ImageFormat不要使用jpeg,预览会出现卡顿)
             //通过mReader设置图像数据分辨率，可以与预览分辨率不同
 //            mImageReaderByte = ImageReader.newInstance(640, 480, ImageFormat.YUV_420_888, 2);
@@ -303,6 +296,9 @@ public class Camera2HighSpeedProxy {
                         }
                     }, mBackgroundHandler); // handle 传入 null 表示使用当前线程的 Looper
         } catch (Exception e) {
+            /**
+             * CameraAccessException更换为Exception就不再崩溃了，也没有这个错误，但是没有预览，但可以拍摄高速视频
+             */
             e.printStackTrace();
         }
     }
@@ -386,6 +382,11 @@ public class Camera2HighSpeedProxy {
                                                @NonNull CaptureRequest request,
                                                @NonNull TotalCaptureResult result) {
                     Log.w(TAG, "onCaptureCompleted, time: " + (System.currentTimeMillis() - time));
+                    /**
+                     * 高速模式不支持拍照
+                     * Constrained high speed session doesn't support this method
+                     *  at android.hardware.camera2.impl.CameraConstrainedHighSpeedCaptureSessionImpl.capture(CameraConstrainedHighSpeedCaptureSessionImpl.java:203)
+                     */
                     try {
                         mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata
                                 .CONTROL_AF_TRIGGER_CANCEL);
@@ -743,7 +744,7 @@ public class Camera2HighSpeedProxy {
         try {
             // 7. 发送上述设置的对焦请求，并监听回调
             mCaptureSession.capture(mPreviewRequestBuilder.build(), mAfCaptureCallback, mBackgroundHandler);
-        } catch (CameraAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
