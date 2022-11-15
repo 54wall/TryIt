@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/ota_upgrade_textview_one"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/ota_upgrade_warning_title"
+        android:textSize="22dp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/ota_update_image_first"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+             />
+
+        <TextView
+            android:id="@+id/ota_upgrade_textview_two"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/ota_update_image_first"
+            android:text="@string/ota_upgrade_warning_list_first"
+            android:textSize="18dp" />
+
+        <ImageView
+            android:id="@+id/ota_update_image_second"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ota_upgrade_textview_two"
+            />
+
+        <TextView
+            android:id="@+id/ota_upgrade_textview_three"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ota_upgrade_textview_two"
+            android:layout_toRightOf="@id/ota_update_image_second"
+            android:text="@string/ota_upgrade_warning_list_second"
+            android:textSize="18dp" />
+
+        <ImageView
+            android:id="@+id/ota_update_image_third"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ota_upgrade_textview_three"
+             />
+
+        <TextView
+            android:id="@+id/ota_upgrade_textview_four"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ota_upgrade_textview_three"
+            android:layout_toRightOf="@id/ota_update_image_third"
+            android:text="@string/ota_upgrade_warning_list_third"
+            android:textSize="18dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/cancle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/ota_upgrade_cancle" />
+
+            <Button
+                android:id="@+id/confirm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/cancle"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/ota_upgrade_confirm" />
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

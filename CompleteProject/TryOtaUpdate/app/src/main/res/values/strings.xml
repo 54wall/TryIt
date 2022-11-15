@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">OtaUpdate</string>
+    <string name="action_settings">Settings</string>
+    <!-- Add for sdcard upgrade-->
+    <string name="settings_storage_software_upgrade">SoftWare Upgrade</string>
+    <string name="settings_storage_ota_upgrade">SD card Upgrade</string>
+    <string name="ota_upgrade_warning_title">Warning</string>
+    <string name="ota_upgrade_warning_list_first">During the upgrade,do not remove the battery,UIM card,and SD card.</string>
+    <string name="ota_upgrade_warning_list_second">Make sure that the battery level is sufficent.</string>
+    <string name="ota_upgrade_warning_list_third">You are recommanded to back up data to SD card before upgrade.</string>
+    <string name="ota_upgrade_cancle">Cancle</string>
+    <string name="ota_upgrade_confirm">Confirm</string>
+    <string name="ota_upgrade_introduction">The upgrade takes about two minutes.Do not perform any operations during the upgrade.The upgrade application will automatically stop in 30s.</string>
+    <string name="process_step_one">Firmware update</string>
+    <string name="process_title_one">Unpacking...</string>
+    <string name="update_introduction">The full update will take about 2 minutes.Please do not turn off the device during this period.</string>
+    <string name="update_introduction_two">Do not turn off the device.</string>
+    <string name="the_step_number">Step 1/2</string>
+    <string name="the_next_step_number">Step 2/2</string>
+    <string name="install_process">Install...</string>
+    <string name="install_process_complete">Update Complete!</string>
+    <string name="restart">restart...</string>
+    <string name="update_package_not_found">No update package found!</string>
+    <string name="ota_not_mounted">SD card not mounted!</string>
+</resources>
