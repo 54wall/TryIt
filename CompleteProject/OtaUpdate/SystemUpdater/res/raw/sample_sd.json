@@ -1,0 +1,19 @@
+{
+    "name": "SD card root update",
+    "url": "file:///storage/emulated/0/update.zip",
+    "ab_install_type": "NON_STREAMING",
+    "ab_streaming_metadata": {
+        "property_files": [
+            {
+                "filename": "payload.bin",
+                "offset": 531,
+                "size": 5012323
+            }
+        ],
+        "authorization": "Basic my-secret-token"
+    },
+    "ab_config": {
+        "force_switch_slot": true,
+        "verify_payload_metadata": false
+    }
+}
